@@ -1,0 +1,22 @@
+{
+    "name": "letsprintondemand/module-ordersync",
+    "description": "",
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "authors": [
+        {
+            "name": "Star Editions Ltd",
+            "email": "dev@letsprintondemand.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Letsprintondemand\\OrderSync\\": ""
+        }
+    }
+}

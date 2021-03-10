@@ -1,0 +1,61 @@
+<?php
+    $controller = $block->getCustomUrl();
+    echo $block->getButtonHtml();
+?>
+<input type="hidden" id="magento_base_url" value="<?= $this->getBaseUrl(); ?>">
+ <script type="text/javascript">
+    require([ 'jquery', 'mage/url', 'jquery/ui'], function($, url){ $( "#updateendpoint" ).click(function() {
+    	var storename = $("#ordersync_settings_storename").val();
+    	var apiUrl = $("#ordersync_settings_apiurl").val();
+    	var token = $("#ordersync_settings_apitoken").val();
+    	var baseUrl = $("#magento_base_url").val();
+    	var reqUrl = baseUrl+'ordersync/update/endpoint';
+    	if(storename && apiUrl && token) {
+			$('#endpointmsg').remove();
+			var ajaxRequest;
+			ajaxRequest = $.ajax({
+                showLoader: true,
+                url: reqUrl,
+                data: {
+                	form_key: window.FORM_KEY,
+                	valid: 1,
+                	endpoint_url: baseUrl+'rest/all/V1/ordersync/orderupdate'
+                },
+                type: 'POST',
+                dataType: 'json',
+                beforeSend: function () {
+                    $('#loader').show();
+                }
+            });
+            ajaxRequest.done(function (response, textStatus, jqXHR) {
+	            jQuery('#loader').hide();
+				$('#endpointmsg').remove();
+	            if(response == true) {	            
+		            $("<span id='endpointmsg' style='color:green;'>Endpoint updated.</span>").insertAfter("#updateendpoint");
+					setTimeout( function(){ 
+						$('#endpointmsg').remove();
+					}  , 3000 );
+	            } else {
+	            	$("<span id='endpointmsg' style='color:red;'>Something went wrong.</span>").insertAfter("#updateendpoint");
+					setTimeout( function(){ 
+						$('#endpointmsg').remove();
+					}  , 3000 );
+	            }
+	        });
+	        ajaxRequest.fail(function () {	            
+	        	$('#endpointmsg').remove();
+	        	jQuery('#loader').hide();
+	    		$("<span id='endpointmsg' style='color:red;'>Oops, An error occured, please try again later!</span>").insertAfter("#updateendpoint");
+				setTimeout( function(){ 
+					$('#endpointmsg').remove();
+				}  , 3000 );
+	        });
+    	} else {
+			$('#endpointmsg').remove();
+    		$("<span id='endpointmsg' style='color:red;'>Please make sure above details are entered and correct.</span>").insertAfter("#updateendpoint");
+			setTimeout( function(){ 
+				$('#endpointmsg').remove();
+			}  , 3000 );
+    	}
+	}); });
+</script>

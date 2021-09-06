@@ -10,6 +10,7 @@ namespace Letsprintondemand\OrderSync\Observer\Checkout;
 class OnepageControllerSuccessAction implements \Magento\Framework\Event\ObserverInterface
 {
     protected $helper;
+    
     protected $logger;
 
     public function __construct(
@@ -20,12 +21,6 @@ class OnepageControllerSuccessAction implements \Magento\Framework\Event\Observe
         $this->logger = $logger;
     }
 
-    /**
-     * Execute observer
-     *
-     * @param \Magento\Framework\Event\Observer $observer
-     * @return void
-     */
     public function execute(
         \Magento\Framework\Event\Observer $observer
     ) {
@@ -137,13 +132,18 @@ class OnepageControllerSuccessAction implements \Magento\Framework\Event\Observe
                     $headers[] = 'Authorization: Bearer '.$token;
                     $headers[] = 'Content-Type: application/json';
                     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                    $result = curl_exec($ch);
+                    $result = curl_exec($ch);                    
                     curl_close($ch);
                 } catch(\Exception $e) {
                     $this->logger->debug($e->getMessage());
                 }            
             }
         }        
+    
+
+
+
+
     }
 }
 

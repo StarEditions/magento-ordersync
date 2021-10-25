@@ -43,7 +43,7 @@ class OrderSynchronize
      * @return void
      */
     public function execute()
-    {
+    {    	
     	$digits = 6;
 		$uniqueRequestID = rand(pow(10, $digits-1), pow(10, $digits)-1);
     	$writer = new \Zend\Log\Writer\Stream(BP . '/var/log/ordersync_errors.log');
@@ -62,15 +62,15 @@ class OrderSynchronize
 	    	if(!$isProcessLocked) {
 	    		//sets process lock to 1 so that another CRON cannot be run until the previous CRON is running
 	    		$this->configWriter->save('ordersync/cron/processlock', 1);
-	    		$orderDataCollection = $this->orderCollectionFactory->create()
+	    		$orderDataCollection = $this->orderCollectionFactory->create()	    			
 					->addAttributeToSelect('*')
 					->addFieldToFilter('created_at', array(
 						'from'     => strtotime('-1 day', time()),
 						'to'       => time(),
 						'datetime' => true
 					))
-					->addFieldToFilter('order_sync', 0);		        
-		        if($orderDataCollection->getSize()) {
+					->addFieldToFilter('order_sync', 0);				
+		        if($orderDataCollection->getSize()) {		        	
 		        	foreach($orderDataCollection as $orderData) {
 				        $taxes_included = FALSE;
 				        if($orderData['base_tax_amount']) {
@@ -80,39 +80,47 @@ class OrderSynchronize
 				        $shippingAddress = $orderData->getShippingAddress();
 				        $billingAddress = $orderData->getBillingAddress();
 				        $lineItems = [];
-				        $product_options = [];
 				        $storeBrand = $this->helper->getStoreBrandValue();
-				        $lessPrice = 0;
+				        $lessPrice = 0;				        
 				        foreach($orderData->getAllItems() as $_item) {
-				            $productManufacturer = $_item->getProduct()->getAttributeText('manufacturer');
-				            if($productManufacturer == $storeBrand) {
-				                if(isset($_item['product_options']['options'])) {
-				                    $productOptions = $_item['product_options']['options'];
-				                    foreach($productOptions as $option) {
-				                        $product_options[] = $option['value'];
-				                    }
-				                }
-				                $lineItems[] = [
-				                    "id"=> $_item['item_id'], // REQUIRED
-				                    "variant_id" => '',
-				                    "title"=> $_item['name'], // REQUIRED
-				                    "quantity"=> $_item['qty_ordered'],// REQUIRED
-				                    "sku"=>  $_item['sku'],// REQUIRED
-				                    "variant_title"=> $_item['product_type'],
-				                    "vendor"=> '',
-				                    "name"=> $_item['name'],
-				                    "properties" => [
-				                        $product_options
-				                    ],
-				                    "grams" => $_item['row_weight'],
-				                    "price" => $_item['price'], // REQUIRED
-				                    "total_discount" => $_item['discount_amount'],
-				                    "fulfillment_service" => 'star-editions',
-				                    "fulfillment_status" => ''
-				                ];
-				            } else {
-				                $lessPrice = $lessPrice + ($_item['price']*$_item['qty_ordered']);
-				            }
+				        	if($_item->getProductType() != 'configurable') {
+				        		$product_options = [];
+					            $productManufacturer = $_item->getProduct()->getAttributeText('manufacturer');
+					            if($productManufacturer == $storeBrand) {
+					                /*if(isset($_item['product_options']['options'])) {
+					                    $productOptions = $_item['product_options']['options'];
+					                    foreach($productOptions as $option) {
+					                        $product_options[] = $option['value'];
+					                    }
+					                }*/
+					                if(isset($_item['parent_item_id'], $_item['product_options']['info_buyRequest']['options'])) {
+					                	$productOptions = $_item['product_options']['info_buyRequest']['options'];
+					                	foreach($productOptions as $option) {
+					                        $product_options[] = $option;
+					                    }
+					                }
+					                $lineItems[] = [
+					                    "id"=> $_item['item_id'], // REQUIRED
+					                    "variant_id" => '',
+					                    "title"=> $_item['name'], // REQUIRED
+					                    "quantity"=> $_item['qty_ordered'],// REQUIRED
+					                    "sku"=>  $_item['sku'],// REQUIRED
+					                    "variant_title"=> $_item['product_type'],
+					                    "vendor"=> '',
+					                    "name"=> $_item['name'],
+					                    "properties" => [
+					                        $product_options
+					                    ],
+					                    "grams" => $_item['row_weight'],
+					                    "price" => $_item['price'], // REQUIRED
+					                    "total_discount" => $_item['discount_amount'],
+					                    "fulfillment_service" => 'star-editions',
+					                    "fulfillment_status" => ''
+					                ];
+					            } else {
+					                $lessPrice = $lessPrice + ($_item['price']*$_item['qty_ordered']);
+					            }
+				        	}
 				        }
 				        if($lineItems) {
 				            $data = array(
@@ -168,7 +176,7 @@ class OrderSynchronize
 				            $token = $this->helper->getApiToken();
 				            if($apiUrl && $store_name && $token) {
 				                try {
-				                    $ch = curl_init();
+				                    $ch = curl_init();				                    
 				                    curl_setopt($ch, CURLOPT_URL, $apiUrl.$store_name.'/order');
 				                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				                    curl_setopt($ch, CURLOPT_POST, 1);
@@ -178,7 +186,7 @@ class OrderSynchronize
 				                    $headers[] = 'Authorization: Bearer '.$token;
 				                    $headers[] = 'Content-Type: application/json';
 				                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-				                    $result = curl_exec($ch);    
+				                    $result = curl_exec($ch);
 				                    curl_close($ch);				                    
 		        					$orderData->setData('order_sync', 1)->save();
 				                } catch(\Exception $e) {

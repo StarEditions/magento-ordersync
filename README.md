@@ -15,7 +15,7 @@
 ## Installation
 \* = in production please use the `--keep-generated` option
 
-[a Installation Guide](star-editions_magento2_installation-guide.pdf)
+[Installation Guide](star-editions_magento2_installation-guide.pdf)
 
 ### Type 1: Zip file
 

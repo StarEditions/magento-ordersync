@@ -19,6 +19,11 @@ class OrderSynchronize
     protected $configWriter;
 
     protected $helper;
+	
+	/**
+	* \Magento\Store\Model\App\Emulation
+	*/
+	protected $emulation;
 
     /**
      * Constructor
@@ -29,12 +34,14 @@ class OrderSynchronize
     	\Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory $scopeCollectionFactory,
     	WriterInterface $configWriter,
     	\Letsprintondemand\OrderSync\Helper\Data $helper,
-    	\Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+    	\Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
+    	\Magento\Store\Model\App\Emulation $emulation
     ) {        
         $this->helper = $helper;
         $this->configWriter = $configWriter;
         $this->scopeCollectionFactory = $scopeCollectionFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
+        $this->emulation = $emulation;
     }
 
     /**
@@ -72,6 +79,7 @@ class OrderSynchronize
 					->addFieldToFilter('order_sync', 0);				
 		        if($orderDataCollection->getSize()) {		        	
 		        	foreach($orderDataCollection as $orderData) {
+		        		$this->emulation->startEnvironmentEmulation($orderData->getStoreId(), 'adminhtml');
 				        $taxes_included = FALSE;
 				        if($orderData['base_tax_amount']) {
 				            $taxes_included = true;
@@ -196,6 +204,7 @@ class OrderSynchronize
 				                }
 				            }
 				        }
+				        $this->emulation->stopEnvironmentEmulation();
 		        	}	        	
 		        }		        
 	    		//At the end set process lock to 0, so next CRON can proceed

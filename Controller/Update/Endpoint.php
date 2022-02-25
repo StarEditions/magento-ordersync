@@ -44,9 +44,14 @@ class Endpoint extends \Magento\Framework\App\Action\Action
         try {
             $data = $this->getRequest()->getPostValue();
             if($data['form_key'] && $data['valid'] && $data['endpoint_url']) {
-                $apiUrl = $this->helper->getStoreApiUrl();
+                /*$apiUrl = $this->helper->getStoreApiUrl();
                 $storename = $this->helper->getStoreName();
-                $token = $this->helper->getApiToken();
+                $token = $this->helper->getApiToken();*/
+
+                $apiUrl = $data['apiUrl'];
+                $storename = $data['store_name'];
+                $token = $data['token'];
+                
                 $post_data['Custom_Endpoint'] = $data['endpoint_url'];
                 if($apiUrl && $storename && $token) {
                     $ch = curl_init();

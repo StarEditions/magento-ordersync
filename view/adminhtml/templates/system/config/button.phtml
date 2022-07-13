@@ -1,15 +1,13 @@
 <?php
-    $controller = $block->getCustomUrl();
     echo $block->getButtonHtml();
 ?>
-<input type="hidden" id="magento_base_url" value="<?= $this->getBaseUrl(); ?>">
  <script type="text/javascript">
     require([ 'jquery', 'mage/url', 'jquery/ui'], function($, url){ $( "#updateendpoint" ).click(function() {
     	var storename = $("#ordersync_settings_storename").val();
     	var apiUrl = $("#ordersync_settings_apiurl").val();
     	var token = $("#ordersync_settings_apitoken").val();
-    	var baseUrl = $("#magento_base_url").val();
-    	var reqUrl = baseUrl+'ordersync/update/endpoint';
+    	var baseUrl = "<?= $this->getBaseUrl(); ?>";
+    	var reqUrl = "<?= $this->getAjaxUrl('ordersync/update/endpoint') ?>";
     	if(storename && apiUrl && token) {
 			$('#endpointmsg').remove();
 			var ajaxRequest;

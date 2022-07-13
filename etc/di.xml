@@ -1,4 +1,4 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-	<preference for="Letsprintondemand\OrderSync\Api\OrderupdateManagementInterface" type="Letsprintondemand\OrderSync\Model\OrderupdateManagement"/>
+	<preference for="StarEditions\OrderSync\Api\OrderupdateManagementInterface" type="StarEditions\OrderSync\Model\OrderupdateManagement"/>
 </config>

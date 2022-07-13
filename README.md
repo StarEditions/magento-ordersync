@@ -1,6 +1,6 @@
-# Mage2 Module Letsprintondemand OrderSync
+# Mage2 Module StarEditions OrderSync
 
-    ``letsprintondemand/module-ordersync``
+    ``stareditions/module-ordersync``
 
  - [Main Functionalities](#markdown-header-main-functionalities)
  - [Installation](#markdown-header-installation)
@@ -19,8 +19,8 @@
 
 ### Type 1: Zip file
 
- - Unzip the zip file in `app/code/Letsprintondemand/OrderSync`
- - Enable the module by running `php bin/magento module:enable Letsprintondemand_OrderSync`
+ - Unzip the zip file in `app/code/StarEditions/OrderSync`
+ - Enable the module by running `php bin/magento module:enable StarEditions_OrderSync`
  - Apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
 
@@ -31,8 +31,8 @@
     - public repository `packagist.org`
     - public github repository as vcs
  - Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
- - Install the module composer by running `composer require letsprintondemand/module-ordersync`
- - enable the module by running `php bin/magento module:enable Letsprintondemand_OrderSync`
+ - Install the module composer by running `composer require stareditions/module-ordersync`
+ - enable the module by running `php bin/magento module:enable StarEditions_OrderSync`
  - apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
 
@@ -45,7 +45,7 @@
 ## Specifications
 
  - Observer
-	- checkout_onepage_controller_success_action > Letsprintondemand\OrderSync\Observer\Checkout\OnepageControllerSuccessAction
+	- checkout_onepage_controller_success_action > StarEditions\OrderSync\Observer\Checkout\OnepageControllerSuccessAction
 
 
 ## Attributes

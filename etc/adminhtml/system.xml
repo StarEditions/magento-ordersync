@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
 	<system>
-		<tab id="letsprintondemand" translate="label" sortOrder="999">
-			<label>Let's print on demand</label>
+		<tab id="stareditions" translate="label" sortOrder="999">
+			<label>StarEditions</label>
 		</tab>
 		<section id="ordersync" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
 			<label>Auto Sync Orders</label>
-			<tab>letsprintondemand</tab>
-			<resource>Letsprintondemand_OrderSync::config_letsprintondemand_ordersync</resource>
+			<tab>stareditions</tab>
+			<resource>StarEditions_OrderSync::config_stareditions_ordersync</resource>
 			<group id="settings" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
 				<label>Settings</label>
 				<field id="storename" type="text" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
@@ -25,14 +25,18 @@
 					<validate>required-entry</validate>
 					<comment/>
 				</field>
+				<field id="order_export_statuses" showInDefault="1" showInStore="0" showInWebsite="0" sortOrder="15" translate="label" type="multiselect">
+					<label>Order status when order should be exported</label>
+					<source_model>StarEditions\OrderSync\Model\Config\Source\SyncOrderStatus</source_model>
+				</field>
 				<field id="storebrands" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
 				    <label>Vendor (star-editions)</label>
-				    <source_model>Letsprintondemand\OrderSync\Model\Config\Source\ConfigOption</source_model>
+				    <source_model>StarEditions\OrderSync\Model\Config\Source\ConfigOption</source_model>
 				    <comment><![CDATA[Please note that all products fulfilled by Star Editions, must have the correct vendor selected. Orders will only be synchronised with items set to the star-editions vendor]]></comment>
 				</field>
 				<field id="updateendpoint" translate="label" type="button" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
 				    <label>Update Store Endpoint</label>
-				    <frontend_model>Letsprintondemand\OrderSync\Block\System\Config\Button</frontend_model>
+				    <frontend_model>StarEditions\OrderSync\Block\System\Config\Button</frontend_model>
 				     <comment><![CDATA[Order status updates will be pushed to this URL.<br/> If the fulfilment status is not being updated, click on the button above to restore the endpoint URL]]></comment>
 				</field>
 			</group>

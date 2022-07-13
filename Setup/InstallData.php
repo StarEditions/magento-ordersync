@@ -1,6 +1,9 @@
 <?php
-
-namespace Letsprintondemand\OrderSync\Setup;
+/**
+ * Copyright ©  All rights reserved.
+ * See COPYING.txt for license details.
+ */
+namespace StarEditions\OrderSync\Setup;
 
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;
@@ -14,21 +17,20 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 class InstallData implements InstallDataInterface
 {
     /**
-     * EAV setup factory
-     *
-     * @var \Magento\Eav\Setup\EavSetupFactory
+     * @var EavSetupFactory
      */
     private $eavSetupFactory;
 
+    /**
+     * @var WriterInterface
+     */
     protected $configWriter;
 
     /**
      * Constructor
      *
-     * @param CategorySetupFactory $categorySetupFactory
      * @param EavSetupFactory $eavSetupFactory
-     * @param Product $product
-     * @param State $state
+     * @param WriterInterface $configWriter
      */
     public function __construct(
         EavSetupFactory $eavSetupFactory,
@@ -43,7 +45,7 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        try{        	
+        try{
         	$this->configWriter->save('ordersync/cron/processlock', 0);
             $this->configWriter->save('ordersync/cron/processlock_maxtry', 0);
         } catch (\Exception $e) {

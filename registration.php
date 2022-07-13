@@ -5,5 +5,5 @@
  */
 use Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Letsprintondemand_OrderSync', __DIR__);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'StarEditions_OrderSync', __DIR__);
 

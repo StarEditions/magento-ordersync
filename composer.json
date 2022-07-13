@@ -1,12 +1,12 @@
 {
-    "name": "letsprintondemand/module-ordersync",
+    "name": "stareditions/module-ordersync",
     "description": "",
     "type": "magento2-module",
     "license": "OSL-3.0",
     "authors": [
         {
             "name": "Star Editions Ltd",
-            "email": "dev@letsprintondemand.com"
+            "email": "dev@stareditions.com"
         }
     ],
     "minimum-stability": "dev",
@@ -16,7 +16,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Letsprintondemand\\OrderSync\\": ""
+            "StarEditions\\OrderSync\\": ""
         }
     }
 }

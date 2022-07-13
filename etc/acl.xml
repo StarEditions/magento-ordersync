@@ -3,10 +3,11 @@
 	<acl>
 		<resources>
 			<resource id="Magento_Backend::admin">
+				<resource id="StarEditions_OrderSync::entities" title="StarEditions OrderSync Integration"/>
 				<resource id="Magento_Backend::stores">
 					<resource id="Magento_Backend::stores_settings">
 						<resource id="Magento_Config::config">
-							<resource id="Letsprintondemand_OrderSync::config_letsprintondemand_ordersync" title="ordersync"/>
+							<resource id="StarEditions_OrderSync::config_stareditions_ordersync" title="OrderSync Configuration"/>
 						</resource>
 					</resource>
 				</resource>

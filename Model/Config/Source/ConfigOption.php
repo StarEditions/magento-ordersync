@@ -1,6 +1,9 @@
 <?php
-
-namespace Letsprintondemand\OrderSync\Model\Config\Source;
+/**
+ * Copyright ©  All rights reserved.
+ * See COPYING.txt for license details.
+ */
+namespace StarEditions\OrderSync\Model\Config\Source;
 
 class ConfigOption implements \Magento\Framework\Option\ArrayInterface
 {

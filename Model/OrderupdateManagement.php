@@ -5,50 +5,120 @@
  */
 declare(strict_types=1);
 
-namespace Letsprintondemand\OrderSync\Model;
+namespace StarEditions\OrderSync\Model;
 
+use Exception;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Webapi\Rest\Request;
+use Magento\Sales\Model\Order\Shipment\TrackFactory;
+use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Order\Status\Collection as OrderStatusCollection;
 use Magento\Sales\Model\ResourceModel\Order\Status as StatusResource;
 use Magento\Sales\Model\ResourceModel\Order\StatusFactory as StatusResourceFactory;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Status;
 use Magento\Sales\Model\Order\StatusFactory;
+use Magento\Shipping\Model\ShipmentNotifier;
+use Psr\Log\LoggerInterface;
+use StarEditions\OrderSync\Api\OrderupdateManagementInterface;
+use StarEditions\OrderSync\Helper\Data;
 
-class OrderupdateManagement implements \Letsprintondemand\OrderSync\Api\OrderupdateManagementInterface
+class OrderupdateManagement implements OrderupdateManagementInterface
 {
 
+    /**
+     * @var PageFactory
+     */
     protected $resultPageFactory;
+
+    /**
+     * @var \Magento\Framework\Json\Helper\Data
+     */
     protected $jsonHelper;
+
+    /**
+     * @var Data
+     */
     protected $helper;
+
+    /**
+     * @var OrderFactory
+     */
     protected $order;
+
+    /**
+     * @var StatusFactory
+     */
     protected $statusFactory;
+
+    /**
+     * @var StatusResourceFactory
+     */
     protected $statusResourceFactory;
+
+    /**
+     * @var OrderStatusCollection
+     */
     private $orderStatusCollection;
+
+    /**
+     * @var Request
+     */
     private $request;
+
+    /**
+     * @var \Magento\Sales\Model\Convert\Order
+     */
     private $orderModel;
+
+    /**
+     * @var TrackFactory
+     */
     private $trackFactory;
+
+    /**
+     * @var ShipmentNotifier
+     */
     private $shipmentFactory;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Action\Context  $context
+     * @param OrderStatusCollection $orderStatusCollection
+     * @param PageFactory $resultPageFactory
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
+     * @param Data $helper
+     * @param OrderFactory $order
+     * @param StatusFactory $statusFactory
+     * @param Request $request
+     * @param TrackFactory $trackFactory
+     * @param ShipmentNotifier $shipmentFactory
+     * @param StatusResourceFactory $statusResourceFactory
+     * @param \Magento\Sales\Model\Convert\Order $orderModel
+     * @param LoggerInterface $logger
      */
-
-    public function __construct(        
+    public function __construct(
         OrderStatusCollection $orderStatusCollection,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        PageFactory $resultPageFactory,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Letsprintondemand\OrderSync\Helper\Data $helper,
-        \Magento\Sales\Model\OrderFactory $order,
+        Data $helper,
+        OrderFactory $order,
         StatusFactory $statusFactory,
-        \Magento\Framework\Webapi\Rest\Request $request,
-        \Magento\Sales\Model\Order\Shipment\TrackFactory $trackFactory,
-        \Magento\Shipping\Model\ShipmentNotifier $shipmentFactory,
+        Request $request,
+        TrackFactory $trackFactory,
+        ShipmentNotifier $shipmentFactory,
         StatusResourceFactory $statusResourceFactory,
         \Magento\Sales\Model\Convert\Order $orderModel,
-        \Psr\Log\LoggerInterface $logger
+        LoggerInterface $logger
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->jsonHelper = $jsonHelper;
@@ -61,13 +131,13 @@ class OrderupdateManagement implements \Letsprintondemand\OrderSync\Api\Orderupd
         $this->statusResourceFactory = $statusResourceFactory;
         $this->orderStatusCollection=$orderStatusCollection;
         $this->helper = $helper;
-        $this->order = $order;        
+        $this->order = $order;
     }
 
     /**
      * Execute view action
      *
-     * @return \Magento\Framework\Controller\ResultInterface
+     * @return ResultInterface
      */
     public function postOrderupdate()
     {
@@ -86,7 +156,7 @@ class OrderupdateManagement implements \Letsprintondemand\OrderSync\Api\Orderupd
                         foreach ($order->getAllItems() AS $orderItem) {
                             $storeBrand = $this->helper->getStoreBrandValue();
                             $productManufacturer = $orderItem->getProduct()->getAttributeText('manufacturer');
-                            if ($productManufacturer == $storeBrand) {                                
+                            if ($productManufacturer == $storeBrand) {
                                 $qtyShipped = $orderItem->getQtyToShip();
                                 $shipmentItem = $this->orderModel->itemToShipmentItem($orderItem)->setQty($qtyShipped);
                                 $shipment->addItem($shipmentItem);
@@ -106,24 +176,29 @@ class OrderupdateManagement implements \Letsprintondemand\OrderSync\Api\Orderupd
                             $shipment->getOrder()->save();
                             $shipment->save();
                             return true;
-                        } catch(\Exception $e) {
+                        } catch(Exception $e) {
                             $this->logger->info($e->getMessage());
                             return $e->getMessage();
                         }
                     }
 				}
             	return json_encode(true);
-			} catch(\Exception $e) {
+			} catch(Exception $e) {
 				return json_encode($e->getMessage());
 			}
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+        } catch (LocalizedException $e) {
             return json_encode($e->getMessage());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->critical($e);
             return json_encode($e->getMessage());
         }
     }
 
+    /**
+     * @param $orderStatus
+     * @return false|mixed|string
+     * @throws AlreadyExistsException
+     */
     public function getAllOrderStatus($orderStatus){
     	$collection = $this->orderStatusCollection;
     	foreach($collection as $status) {
@@ -131,7 +206,7 @@ class OrderupdateManagement implements \Letsprintondemand\OrderSync\Api\Orderupd
     			return $status['status'];
     		}
     	}
-    	$statusResource = $this->statusResourceFactory->create();		        
+    	$statusResource = $this->statusResourceFactory->create();
         $status = $this->statusFactory->create();
         $status->setData([
             'status' => strtolower($orderStatus),
@@ -141,7 +216,7 @@ class OrderupdateManagement implements \Letsprintondemand\OrderSync\Api\Orderupd
         if($statusResource) {
         	$status->assignState(strtolower($orderStatus), true, true);
         	return strtolower($orderStatus);
-        }	
+        }
 	    return false;
 	}
 }

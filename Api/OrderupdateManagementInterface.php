@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Letsprintondemand\OrderSync\Api;
+namespace StarEditions\OrderSync\Api;
 
 interface OrderupdateManagementInterface
 {
